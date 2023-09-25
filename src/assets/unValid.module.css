@@ -1,0 +1,18 @@
+.container{
+    width: 900px; 
+    height: 100px; 
+    background: #FFF4F4; 
+    border-radius: 5px; 
+    border: 1px #D82C0D dotted;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.content p{
+    color: #D82C0D;
+    font-size: 12px;
+    font-family: Inter;
+    font-weight: 400;
+    line-height: 20px;
+    word-wrap: break-word
+}
