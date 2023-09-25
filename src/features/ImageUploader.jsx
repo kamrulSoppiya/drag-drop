@@ -55,6 +55,7 @@ const ImageUploader = ({ onImageUpload,imgFormat }) => {
         const reader = new FileReader();
         reader.onload = (e) => {
           const base64Image = e.target.result;
+        //   console.log(base64Image)
           setSelectedFile(base64Image);
           onImageUpload(base64Image);
         };
