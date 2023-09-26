@@ -1,9 +1,13 @@
-import { useEffect, useState } from "react";
-import classes from '../assets/item.module.css';
+import { useCallback, useEffect, useState } from "react";
+import Item from "./Item";
+import UnValidItem from "./UnValidItem";
+
 const ImageUploader = ({ onImageUpload,imgFormat }) => {
-    // const [image, setImage] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
+    const [error, setError] = useState({
+      status:false, msg:''
+    });
   
     // Drag And Drop
     const handleDragEnter = (e) => {
@@ -15,17 +19,31 @@ const ImageUploader = ({ onImageUpload,imgFormat }) => {
         setIsDragging(false);
     };
 
-    const handleDrop = (e) => {
-        e.preventDefault();
+    const innerHandeler = useCallback((e)=>{
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (file && isSupportedImageFormat(file,imgFormat)) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setError({status:false});
+          const base64Image = e.target.result;
+          setSelectedFile(base64Image);
+          onImageUpload(file, base64Image);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setError(
+          {
+            status:true,
+            msg:`Invalid image format. Please upload an image.`   
+          });
+      }
+    },[imgFormat, onImageUpload])
+
+    const handleDrop = useCallback((e) => {
         setIsDragging(false);
-
-        const file = e.dataTransfer.files[0];
-
-        if (file) {
-            setSelectedFile(file)
-            console.log('file:', file);
-        }
-    };
+        innerHandeler(e);
+    },[innerHandeler]);
 
     useEffect(() => {
         const preventDefault = (e) => {
@@ -44,44 +62,43 @@ const ImageUploader = ({ onImageUpload,imgFormat }) => {
         window.removeEventListener('dragleave', handleDragLeave);
         window.removeEventListener('drop', handleDrop);
         };
-    }, []);
-
+    }, [handleDrop]);
 
 //   Image Uploader
-    const handleImageUpload = (e) => {
+    const handleImageUploader = (e) => {
       const file = e.target.files[0];
-      //  console.log(file);
       if (file && isSupportedImageFormat(file,imgFormat)) {
         const reader = new FileReader();
         reader.onload = (e) => {
           const base64Image = e.target.result;
-        //   console.log(base64Image)
           setSelectedFile(base64Image);
-          onImageUpload(base64Image);
+          onImageUpload(file,base64Image);
         };
         reader.readAsDataURL(file);
       } else {
-        alert('Please select a supported image format (PNG, JPG, or JPEG).');
+        setError(
+          {
+            status:true,
+            msg:`Invalid image format. Please upload an image.`   
+          });
       }
+      
     };
-  
+
     const isSupportedImageFormat = (file,imgFormat) => {
       const conCatData = imgFormat.map(element => 'image/' + element);
       return conCatData.includes(file.type)
     };
-  
+    
     return (
-      <div className={`{drop-zone ${isDragging ? 'dragging' : ''}} ${classes.container}`} onDragEnter={handleDragEnter}>
-         <label htmlFor="file-input" className="custom-file-label">
-            {selectedFile ? selectedFile.name :<h6 className={classes.btnDrag}>Add images</h6>}
-            </label>
-            <input type="file" accept={imgFormat} onChange={handleImageUpload} style={{ display: 'none' }} id="file-input"/>
-            <p>or darg and drop</p>
-            {selectedFile && (<div className="image-preview" style={{width:"300px"}}>
-                <img src={selectedFile} alt="Uploaded" style={{width:"313px"}} />
-                </div>
-            )}      
-      </div>
+      <>
+      {!error.status ? <Item imgFormat={imgFormat} handleImageUploader={handleImageUploader} selectedFile={selectedFile} handleDragEnter={handleDragEnter} isDragging={isDragging}/> : <UnValidItem msg={error.msg} setError={setError}/>}
+        {selectedFile && (
+          <div className="image-preview" style={{width:"200px"}}>
+            <img src={selectedFile} alt="Uploaded" style={{width:"200px"}} />
+          </div>
+        )}      
+      </>
     );
   };
 
