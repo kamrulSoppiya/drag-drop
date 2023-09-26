@@ -1,6 +1,5 @@
-import ImageUploader from "./features/ImageUploader";
 import classes from './assets/fileUp.module.css';
-
+import ImageUploader from "./features/ImageUploader";
 function App() {
   const handleImageUpload = ( file, base64Img) => {
     console.log('Uploaded File:', file);
