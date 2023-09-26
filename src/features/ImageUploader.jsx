@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import classes from '../assets/fileUp.module.css';
+import classes from '../assets/fileUp.module.scss';
 
+// eslint-disable-next-line react/prop-types
 const ImageUploader = ({ onImageUpload, imgFormat }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -13,11 +14,8 @@ const ImageUploader = ({ onImageUpload, imgFormat }) => {
     e.preventDefault();
     setIsDragging(true);
   };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
+  
+  // Function for base64 and Data onLoad   
   const innerHandeler = (e, file) => {
     if (file && isSupportedImageFormat(file, imgFormat)) {
       const reader = new FileReader();
@@ -37,7 +35,6 @@ const ImageUploader = ({ onImageUpload, imgFormat }) => {
     }
   }
 
-
   const handleDrop = (e) => {
     setIsDragging(false);
     e.preventDefault();
@@ -45,18 +42,19 @@ const ImageUploader = ({ onImageUpload, imgFormat }) => {
     innerHandeler(e, file);
   };
 
-  //   Image Uploader
+  //  Image Uploader
   const handleImageUploader = (e) => {
     const file = e.target.files[0];
     innerHandeler(e, file);
   };
 
   const isSupportedImageFormat = (file, imgFormat) => {
+    // eslint-disable-next-line react/prop-types
     const conCatData = imgFormat.map(element => 'image/' + element);
     return conCatData.includes(file.type)
   };
-  
-  // Item
+
+  // Valid Component
   function Item() {
     return (
       <div className={`{drop-zone ${isDragging ? 'dragging' : ''}} ${classes.containerItem}`} onDragEnter={handleDragEnter}>
@@ -67,9 +65,9 @@ const ImageUploader = ({ onImageUpload, imgFormat }) => {
           <p>or darg and drop</p>
       </div>
     )
-  } 
+  }
 
-  // Unvalid Item
+  // Unvalid Component
   function UnValidItem(){
     useEffect(()=>{
       setTimeout(()=>{
@@ -84,8 +82,8 @@ const ImageUploader = ({ onImageUpload, imgFormat }) => {
       </div>
     )
   }
-
-
+  
+  // useEffect for All Drag Component 
   useEffect(() => {
     const preventDefault = (e) => {
       e.preventDefault();
@@ -94,26 +92,27 @@ const ImageUploader = ({ onImageUpload, imgFormat }) => {
 
     window.addEventListener('dragenter', preventDefault);
     window.addEventListener('dragover', preventDefault);
-    window.addEventListener('dragleave', handleDragLeave);
     window.addEventListener('drop', handleDrop);
 
     return () => {
       window.removeEventListener('dragenter', preventDefault);
       window.removeEventListener('dragover', preventDefault);
-      window.removeEventListener('dragleave', handleDragLeave);
       window.removeEventListener('drop', handleDrop);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <>
-      {!error.status ? <Item /> : <UnValidItem />}
-      {selectedFile && (
-        <div className="image-preview" style={{ width: "200px" }}>
-          <img src={selectedFile} alt="Uploaded" style={{ width: "200px" }} />
+      <div className={classes.row}>
+        <div className={classes.container}>
+          {!error.status ? <Item /> : <UnValidItem />}
+          {selectedFile && (
+            <div className="image-preview" style={{ width: "200px" }}>
+              <img src={selectedFile} alt="Uploaded" style={{ width: "200px" }} />
+            </div>
+          )}
         </div>
-      )}
-    </>
+      </div>
   );
 };
 

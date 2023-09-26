@@ -1,4 +1,3 @@
-import classes from './assets/fileUp.module.css';
 import ImageUploader from "./features/ImageUploader";
 function App() {
   const handleImageUpload = ( file, base64Img) => {
@@ -9,11 +8,7 @@ function App() {
   const imgFormat = ["jpg", "jpeg", "png", ];
   
   return (
-      <div className={classes.row}>
-        <div className={classes.container}>
-            <ImageUploader onImageUpload={handleImageUpload} imgFormat={imgFormat} />
-        </div>
-      </div>
+      <ImageUploader onImageUpload={handleImageUpload} imgFormat={imgFormat} />
   );
 }
 
