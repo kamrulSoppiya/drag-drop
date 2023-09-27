@@ -5,7 +5,7 @@ function App() {
     console.log('Base64:', base64Img);
   };
 
-  const imgFormat = ["jpg", "jpeg", "png", ];
+  const imgFormat = ["jpg", "jpeg", "png" ];
   
   return (
       <ImageUploader onImageUpload={handleImageUpload} imgFormat={imgFormat} />
